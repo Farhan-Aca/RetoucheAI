@@ -2,52 +2,12 @@ version: "3.9"
 
 services:
   api:
-    # --- Production (par défaut) ---
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: fastapi-rembg:latest
-    container_name: fastapi-app
-    ports:
-      - "8000:8000"
-    # Ces variables sont déjà dans ton Dockerfile, mais on les redéclare
-    # pour clarté (et pour pouvoir les surcharger via .env si besoin).
-    environment:
-      PYTHONDONTWRITEBYTECODE: "1"
-      PYTHONUNBUFFERED: "1"
-      PIP_NO_CACHE_DIR: "1"
-    # En prod on ne monte pas le code hôte (on utilise l'image construite)
-    restart: unless-stopped
-    healthcheck:
-      # Remplace /health par une route existante (/docs fonctionne aussi)
-      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
-
-  api-dev:
-    # --- Développement (lance `docker compose --profile dev up`) ---
-    profiles: ["dev"]
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: fastapi-rembg:dev
-    container_name: fastapi-app-dev
+    build: .
+    container_name: fastapi
     command: uvicorn model:app --host 0.0.0.0 --port 8000 --reload
     ports:
       - "8000:8000"
-    environment:
-      PYTHONDONTWRITEBYTECODE: "1"
-      PYTHONUNBUFFERED: "1"
-      PIP_NO_CACHE_DIR: "1"
-    # Montage du code en lecture seule (retire :ro si tu veux éditer)
+
     volumes:
-      - ./:/app:ro
+      - .:/app
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-fsS", "http://localhost:8000/docs"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 5s
