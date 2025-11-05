@@ -24,8 +24,7 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_ed25519 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             set -e
-            cd "${APP_DIR:-/home/ubuntu/download}"
+            cd "${APP_DIR:-/home/ubuntu/download/backend/fastap}"
             git pull --rebase --autostash
-            docker compose down || true
-            docker compose up -d --build api
+            docker-compose up -d    # pas de --build
           EOF
