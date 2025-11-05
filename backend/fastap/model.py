@@ -12,12 +12,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://visionia.pro",   # ton site en HTTP
-        "https://visionia.pro",  # ajoute-le aussi si/ quand tu passes en HTTPS
-        "http://www.visionia.pro",
-        "https://www.visionia.pro",
-    ],                  # En dev tu peux mettre ["*"] pour simplifier
+    allow_origins=["*"],                  # En dev tu peux mettre ["*"] pour simplifier
     allow_methods=["*"],
     allow_headers=["*"],
     allow_credentials=False,  # mets True seulement si tu utilises des cookies/credentials
