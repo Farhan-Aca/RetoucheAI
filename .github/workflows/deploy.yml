@@ -1,0 +1,31 @@
+name: Deploy backend
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "backend/fastapi/**"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.fartib }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy to EC2
+        run: |
+          ssh -i ~/.ssh/id_ed25519 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            set -e
+            cd "${APP_DIR:-/home/ubuntu/download}"
+            git pull --rebase --autostash
+            docker compose down || true
+            docker compose up -d --build api
+          EOF
