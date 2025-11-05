@@ -33,27 +33,33 @@ export const register = async (req,res) => {
 
 export const login = async (req,res)=> {
 
-    const { Username,password}=  req.body;
+    const { username,password}=  req.body;
+
+    console.log("==== LOGIN DEBUG ====");
+    console.log("Body reçu :", req.body);
+    console.log("username reçu :", username);
+    console.log("=====================");
     
     try{
           
-        const user = await User.findOne({ Username }).select('+password');
+        const user = await User.findOne({ username }).select('+password');
 
 
-        if(!user) return res.status(401).json({message:"invalid credentials"})
+        if(!user) return res.status(401).json({message:"invalid credentia"})
 
         const isPasswordValid = await bcrypt.compare(password,user.password);
         
-        if(!isPasswordValid) return res.status(401).json({message:"invalid credentials"});
+        if(!isPasswordValid) return res.status(401).json({message:"invalid credentials mdp"});
 
-
+/*
         req.session.user = {
         id: user.id,
         username: user.username,
         email: user.email,
-        };
+        };*/
 
         res.status(200).json({ message: "login réussi" });
+        
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: "Failed to login" });

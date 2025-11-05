@@ -1,5 +1,9 @@
-import { useState,useRef } from 'react'
-import './App.css'
+import { useState,useRef } from 'react';
+import './App.css';
+import Connexion from "./pages/connexion.jsx";
+import Inscription from "./pages/inscription.jsx";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+
 
 
 function App() {
@@ -7,6 +11,7 @@ function App() {
   const[imageUrl,setImageUrl]= useState(null);
   const [resultat,setResultat] = useState(null);
   const [fichier, setFichier] = useState(null);
+  const [user, setUser] = useState(null);
 
   const inputRef=useRef(null) 
 
@@ -19,7 +24,7 @@ function envoyer() {
   formData.append('file', fichier);
 
 
-  fetch('http://localhost:8000/predict', {
+  fetch('http://51.21.197.186:8000/predict', {
     method: 'POST',
     body: formData,
   })
@@ -46,24 +51,59 @@ function envoyer() {
   
   return (
 
-    <div>
+      <BrowserRouter>
+      <header className="header">
+        <nav>
+          {user ? (
+            <span>Bienvenue, {user}</span>
+          ) : (
+            <>
+              <Link to="/inscription">Inscription</Link> |{" "}
+              <Link to="/connexion">Connexion</Link>
+            </>
+          )}
+        </nav>
+      </header>
 
-      <h1 className='titre'>Retouche d'image</h1>
-      
-        <div className="blocgauche">
-          <input ref={inputRef} id="imageInput"  type="file" accept="image/*" onChange={recup} />
-          <label htmlFor="imageInput" className="styled">Ajouter une image</label>
-          {imageUrl && <img src={imageUrl} alt="aperçu" />}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <div className="container">
+              <h1 className="titre">Retouche d'image</h1>
+              <div className="blocgauche">
+                <input
+                  ref={inputRef}
+                  id="imageInput"
+                  type="file"
+                  accept="image/*"
+                  onChange={recup}
+                />
+                <label htmlFor="imageInput" className="styled">
+                  Ajouter une image
+                </label>
+                {imageUrl && <img src={imageUrl} alt="aperçu" />}
+                <button onClick={dele}>Supprimer l'image</button>
+              </div>
 
-          <input type="button" value= "supprimer l'image" onClick={dele} />
-        </div>
+              <div className="blocdroit">
+                <button onClick={envoyer}>Résultat</button>
+                {resultat && <img src={resultat} alt="aperçu" />}
+              </div>
+            </div>
+          }
+        />
 
-        <div className="blocdroit">
-
-          <input type="button" value= "Resultat" onClick={envoyer} />
-          {resultat && <img src={resultat} alt="aperçu" />}
-        </div>
-      </div>  
+        <Route
+          path="/inscription"
+          element={<Inscription setUser={setUser} />}
+        />
+        <Route
+          path="/connexion"
+          element={<Connexion setUser={setUser} />}
+        />
+      </Routes>
+    </BrowserRouter>  
   );
 }
 
