@@ -23,7 +23,7 @@ app.add_middleware(
     allow_credentials=False,  # mets True seulement si tu utilises des cookies/credentials
 )
 
-print("hello")
+print("test deploy")
 
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
