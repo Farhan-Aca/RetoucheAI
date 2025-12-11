@@ -25,3 +25,4 @@ EXPOSE 8000
 
 # Commande de démarrage
 CMD ["uvicorn", "model:app", "--host", "0.0.0.0", "--port", "8000"]
+
