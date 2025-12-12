@@ -22,6 +22,21 @@ print("test deploy")
 
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
-    data = await file.read()          # lit les octets de l'image envoyée
-    out = remove(data)                # supprime l’arrière-plan (bytes -> bytes PNG)
-    return Response(content=out, media_type="image/png")
+    # 1. lire l'image
+    data = await file.read()
+
+    # 2. traitement
+    out = remove(data)
+
+    # 3. créer un chemin unique dans S3
+    filename = file.filename.replace(" ", "_")
+    s3_path = f"images/processed/{filename}"
+
+    # 4. upload dans S3
+    s3_url = upload_bytes_to_s3(out, s3_path)
+
+    # 5. retourner l’URL S3 au frontend
+    return {
+        "status": "success",
+        "s3_url": s3_url
+    }
